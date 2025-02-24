@@ -30,3 +30,21 @@ string readFile (string file){
   string s=readFile("netlist.txt");
   cout <<s;
 } 
+
+
+/*each row in the input is a branch
+ we need to find the max number out of column 2 and 3 to find number of nodes
+--extract all input data into separate arrays to use later
+ incidence matrix: nodes on rows and branches on columns: 1 placed in source node and -1 in destination
+ --THIS INFO IS GIVEN IN INPUT FILE so take column 2 info for 1 and column 3 info for destination
+ 
+ remove any nodes that do not have both 1 and -1 for reduced incidence matrix
+
+current coefficients: KCL can be expressed in matrix form as Aai=0 OR Ai=0 for reduced form
+voltage coefficients: KVL can be expressed as difference between two node voltages
+v=[reduced incidence]* nodes
+
+combined coefficients: v=A^T*e & Ai=0
+
+final thoughts: emily is 
+ */
