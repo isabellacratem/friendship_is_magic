@@ -24,6 +24,7 @@ void readFile (string file){
     } 
 
     f.close();
+    
     int numBranches=labels.size();     //number of branches=number of labels 
     int s[numBranches];               //create int array for source nodes
     int d[numBranches];              //create int array for destination nodes
@@ -41,7 +42,7 @@ void readFile (string file){
       }
   
     }
-    
+
     cout <<"labels array:";            //CHECK ARRAYS
     for (int j=0;j<numBranches;j++){
       cout<< labels[j] <<" ";
@@ -62,11 +63,26 @@ void readFile (string file){
     for (int j=0;j<numBranches;j++){
       cout<< r[j] <<" ";
     }
+
+    
+}
+
+void resultsInTxt (vector<int> data){      //function to print results in a text file
+  ofstream file("output.txt");
+  for ( size_t i = 0; i < data.size(); i++) {
+      file << data[i];
+      if (i != data.size() - 1) {
+        file << " ";  // Add space between numbers
+      }
+    }
+    file << endl;
+    file.close();
 }
 
  int main() {
   readFile("netlist.txt");
- 
+  vector<int> s={3,3,4};
+  resultsInTxt(s);
   return 0;
 } 
 
