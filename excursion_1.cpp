@@ -9,62 +9,76 @@ using namespace std;
  Output: a file named output.txt w the format potentials, voltages, currents with one space between them
  "e1 e2 ...en v1 v2... vn i1 i2...in" 
  These values are floating-point numbers w 3 decimal places. */
-
-void readFile (string file){
-       
-    ifstream f(file);                // Open the text file 
+ 
+ 
+ struct circuitData{
+    vector<int> s;  // Source node array
+    vector<int> d;  // Destination node array
+    vector<int> v;  // Voltage array
+    vector<int> r;  // Resistance array
     vector<string> labels;           //this creates an array that stores the branch names (to know voltage vs resistance)
     vector<vector<int>> data;              //this stores all other info (source and destination node and nueric component value)
+
+ };
+
+
+circuitData readFile (string file){
+    circuitData circuit;
+    ifstream f(file);                // Open the text file 
     string label;
     int a,b,c;
    
     while (f >> label >> a >> b >> c) {    // Read each line of the file and extract the first value into a labels vector, and the next three values in an integer vector
-      labels.push_back(label);  
-      data.push_back({a, b, c});  
+      circuit.labels.push_back(label);  
+      circuit.data.push_back({a, b, c});  
     } 
 
     f.close();
+    return circuit;
+  }
+  
+  circuitData processData(circuitData circuit){
+    int numBranches=circuit.labels.size();     //number of branches=number of labels 
+    circuit.s.resize(numBranches);
+    circuit.d.resize(numBranches);
+    circuit.v.resize(numBranches);
+    circuit.r.resize(numBranches);
     
-    int numBranches=labels.size();     //number of branches=number of labels 
-    int s[numBranches];               //create int array for source nodes
-    int d[numBranches];              //create int array for destination nodes
-    int v[numBranches];            //create int array for voltage values
-    int r[numBranches];            //create int array for resistance values
     for (int i=0; i<numBranches; i++){
-      s[i]=data[i][0];                       //fill source array with info from first column of data
-      d[i]=data[i][1];                        //fill destination array with info from second column of data
-      if(labels[i].find("V")<=numBranches){
-        v[i]=data[i][2];
-        r[i]=0;
+      circuit.s[i]=circuit.data[i][0];                       //fill source array with info from first column of data
+      circuit.d[i]=circuit.data[i][1];                        //fill destination array with info from second column of data
+      if(circuit.labels[i].find("V")<=numBranches){
+        circuit.v[i]=circuit.data[i][2];
+       circuit. r[i]=0;
        }else {
-        v[i]=0;
-        r[i]=data[i][2];
+        circuit.v[i]=0;
+        circuit.r[i]=circuit.data[i][2];
       }
   
     }
 
     cout <<"labels array:";            //CHECK ARRAYS
     for (int j=0;j<numBranches;j++){
-      cout<< labels[j] <<" ";
+      cout<< circuit.labels[j] <<" ";
     }
     cout <<"\nsource node array:";            
     for (int j=0;j<numBranches;j++){
-      cout<< s[j] <<" ";
+      cout<< circuit.s[j] <<" ";
     }
     cout <<"\ndestination node array:";
     for (int j=0;j<numBranches;j++){
-      cout<< d[j] <<" ";
+      cout<< circuit.d[j] <<" ";
     }
     cout <<"\nVoltages array:";
     for (int j=0;j<numBranches;j++){
-      cout<< v[j] <<" ";
+      cout<< circuit.v[j] <<" ";
     }
     cout <<"\nResistances array:";
     for (int j=0;j<numBranches;j++){
-      cout<< r[j] <<" ";
+      cout<< circuit.r[j] <<" ";
     }
 
-    
+    return circuit;
 }
 
 void resultsInTxt (vector<int> data){      //function to print results in a text file
@@ -80,7 +94,7 @@ void resultsInTxt (vector<int> data){      //function to print results in a text
 }
 
  int main() {
-  readFile("netlist.txt");
+  processData(readFile("netlist.txt"));
   vector<int> s={3,3,4};
   resultsInTxt(s);
   return 0;
