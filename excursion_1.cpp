@@ -82,6 +82,17 @@ vector<vector<int>> transposeMatrix (vector<vector<int>> &matrix){
   }
   return matrixT;
 }
+
+//identity matrix
+void identityMatrix(vector<vector<float>>& mat, int size) {
+  mat.assign(size, vector<float>(size, 0.0f));
+  for (int i = 0; i < size; i++) {
+      mat[i][i] = 1.0f;
+  }
+}
+
+//identity matri
+
  int main() {
   circuitData circuit;
   readFile("netlist.txt",circuit);
@@ -110,6 +121,8 @@ vector<vector<int>> transposeMatrix (vector<vector<int>> &matrix){
   resultsInTxt(s);
   vector<vector<int>> a ={{1,2,3},{4,5,6}};
   vector<vector<int>>aT;
+
+  
   cout <<"\nMatrix A:\n";
     for (int i=0; i<a.size();i++){
       for (int j=0; j<a[0].size();j++){
@@ -125,6 +138,18 @@ vector<vector<int>> transposeMatrix (vector<vector<int>> &matrix){
     }
     cout <<endl;
   }
+  vector<vector<float>> N(circuit.r.size(), vector<float>(circuit.r.size(), 0.0f)); // Ensure proper size
+  for (int i = 0; i < circuit.r.size(); i++) {
+      N[i][i] = -circuit.r[i];  // Set diagonal elements
+  }
+
+  for (int i=0; i<N.size();i++){
+    for (int j=0; j<N[0].size();j++){
+      cout<< N[i][j] <<" ";
+    }
+    cout <<endl;
+  }
+
   return 0;
 } 
 
