@@ -22,8 +22,7 @@ using namespace std;
  };
 
 
-circuitData readFile (string file){
-    circuitData circuit;
+circuitData readFile (string file, circuitData &circuit){
     ifstream f(file);                // Open the text file 
     string label;
     int a,b,c;
@@ -37,7 +36,7 @@ circuitData readFile (string file){
     return circuit;
   }
   
-  circuitData processData(circuitData circuit){
+  circuitData processData(circuitData &circuit){
     int numBranches=circuit.labels.size();     //number of branches=number of labels 
     circuit.s.resize(numBranches);
     circuit.d.resize(numBranches);
@@ -57,27 +56,6 @@ circuitData readFile (string file){
   
     }
 
-    cout <<"labels array:";            //CHECK ARRAYS
-    for (int j=0;j<numBranches;j++){
-      cout<< circuit.labels[j] <<" ";
-    }
-    cout <<"\nsource node array:";            
-    for (int j=0;j<numBranches;j++){
-      cout<< circuit.s[j] <<" ";
-    }
-    cout <<"\ndestination node array:";
-    for (int j=0;j<numBranches;j++){
-      cout<< circuit.d[j] <<" ";
-    }
-    cout <<"\nVoltages array:";
-    for (int j=0;j<numBranches;j++){
-      cout<< circuit.v[j] <<" ";
-    }
-    cout <<"\nResistances array:";
-    for (int j=0;j<numBranches;j++){
-      cout<< circuit.r[j] <<" ";
-    }
-
     return circuit;
 }
 
@@ -94,7 +72,29 @@ void resultsInTxt (vector<int> data){      //function to print results in a text
 }
 
  int main() {
-  processData(readFile("netlist.txt"));
+  circuitData circuit;
+  readFile("netlist.txt",circuit);
+  processData(circuit);
+  cout <<"labels array: ";            //CHECK ARRAYS
+    for (const string &j :circuit.labels){
+      cout<< j <<" ";
+    }
+    cout <<"\nsource node array: ";            
+    for (int j: circuit.s){
+      cout<< j <<" ";
+    }
+    cout <<"\ndestination node array: ";
+    for (int j: circuit.d){
+      cout<< j <<" ";
+    }
+    cout <<"\nVoltages array: ";
+    for (int j:circuit.v){
+      cout<< j <<" ";
+    }
+    cout <<"\nResistances array: ";
+    for (int j: circuit.r){
+      cout<< j <<" ";
+    }
   vector<int> s={3,3,4};
   resultsInTxt(s);
   return 0;
