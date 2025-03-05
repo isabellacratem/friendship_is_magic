@@ -71,10 +71,10 @@ void resultsInTxt (vector<int> data){      //function to print results in a text
     file.close();
 }
 
-vector<vector<float>> transposeMatrix (vector<vector<float>> &matrix){
+vector<vector<int>> transposeMatrix (vector<vector<int>> &matrix){
   int rows=matrix.size();
   int col=matrix[0].size();
-  vector<vector<float>> matrixT(col, vector<float>(rows));
+  vector<vector<int>> matrixT(col, vector<int>(rows));
   for(int i=0; i<rows; i++){
     for(int j=0; j<col; j++){
       matrixT[j][i]=matrix[i][j];
@@ -108,8 +108,8 @@ vector<vector<float>> transposeMatrix (vector<vector<float>> &matrix){
     }
   vector<int> s={3,3,4};
   resultsInTxt(s);
-  vector<vector<float>> a ={{1,2,3},{4,5,6}};
-  vector<vector<float>>aT;
+  vector<vector<int>> a ={{1,2,3},{4,5,6}};
+  vector<vector<int>>aT;
   cout <<"\nMatrix A:\n";
     for (int i=0; i<a.size();i++){
       for (int j=0; j<a[0].size();j++){
