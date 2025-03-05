@@ -14,10 +14,10 @@ using namespace std;
  struct circuitData{
     vector<int> s;  // Source node array
     vector<int> d;  // Destination node array
-    vector<int> v;  // Voltage array
-    vector<int> r;  // Resistance array
+    vector<float> v;  // Voltage array
+    vector<float> r;  // Resistance array
     vector<string> labels;           //this creates an array that stores the branch names (to know voltage vs resistance)
-    vector<vector<int>> data;              //this stores all other info (source and destination node and nueric component value)
+    vector<vector<float>> data;              //this stores all other info (source and destination node and numeric component value)
 
  };
 
@@ -25,7 +25,7 @@ using namespace std;
 circuitData readFile (string file, circuitData &circuit){
     ifstream f(file);                // Open the text file 
     string label;
-    int a,b,c;
+    float a,b,c;
    
     while (f >> label >> a >> b >> c) {    // Read each line of the file and extract the first value into a labels vector, and the next three values in an integer vector
       circuit.labels.push_back(label);  
@@ -71,6 +71,17 @@ void resultsInTxt (vector<int> data){      //function to print results in a text
     file.close();
 }
 
+vector<vector<float>> transposeMatrix (vector<vector<float>> &matrix){
+  int rows=matrix.size();
+  int col=matrix[0].size();
+  vector<vector<float>> matrixT(col, vector<float>(rows));
+  for(int i=0; i<rows; i++){
+    for(int j=0; j<col; j++){
+      matrixT[j][i]=matrix[i][j];
+    }
+  }
+  return matrixT;
+}
  int main() {
   circuitData circuit;
   readFile("netlist.txt",circuit);
@@ -97,6 +108,23 @@ void resultsInTxt (vector<int> data){      //function to print results in a text
     }
   vector<int> s={3,3,4};
   resultsInTxt(s);
+  vector<vector<float>> a ={{1,2,3},{4,5,6}};
+  vector<vector<float>>aT;
+  cout <<"\nMatrix A:\n";
+    for (int i=0; i<a.size();i++){
+      for (int j=0; j<a[0].size();j++){
+        cout<< a[i][j] <<" ";
+      }
+      cout <<endl;
+    }
+  aT=transposeMatrix(a);
+  cout <<"\nMatrix A Transposed:\n";
+  for (int i=0; i<aT.size();i++){
+    for (int j=0; j<aT[0].size();j++){
+      cout<< aT[i][j] <<" ";
+    }
+    cout <<endl;
+  }
   return 0;
 } 
 
