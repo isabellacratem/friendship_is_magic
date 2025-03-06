@@ -93,72 +93,87 @@ void printMatrix(vector<vector<float>>& matrix) {
     }
 }
 
-vector<vector<float>> createAmatrix(const vector<int>& sourceNodes, const vector<int>& destinationNodes) {
+vector<vector<float>> createAmatrix(const vector<int>& sourceNodes, const vector<int>& destinationNodes){
+    //find length of array
     int length = sourceNodes.size();
 
-    // Find the largest node value manually (no algorithm header)
-    int maxNode = sourceNodes[0];
-    for (int i = 1; i < length; i++) {
-        if (sourceNodes[i] > maxNode) {
-            maxNode = sourceNodes[i];
+    //find the largest Node value between source AND destination
+    int max_source = sourceNodes[0];
+    for (int i = 1; i < sourceNodes.size(); i++) {
+        if (sourceNodes[i] > max_source) {
+            max_source = sourceNodes[i];
         }
     }
 
-    // Create dimensions for matrix A
-    int row_num = maxNode + 1;
-    int col_num = length;
-
-    // Initialize matrix A with zeros
-    vector<vector<float>> A(row_num, vector<float>(col_num, 0.0));
-
-    // Fill matrix A
-    for (int i = 0; i < col_num; i++) {
-        A[sourceNodes[i]][i] = 1.0;  // Source node
-        A[destinationNodes[i]][i] = -1.0;  // Destination node
+    int max_destination = destinationNodes[0];
+    for (int i = 1; i < destinationNodes.size(); i++) {
+        if (destinationNodes[i] > max_source) {
+            max_source = destinationNodes[i];
+        }
     }
 
+    int max;
+        if (max_source > max_destination) {
+             max = max_source;
+        } 
+        else {
+            max = max_destination;
+        }
+    //create dimensions for matrix A
+    int row_num = max + 1;
+    int col_num = length;
+
+    //create matrix A
+    vector<vector<float>> A(row_num, vector<float>(col_num, 0.0));
+
+    //create matrix A
+    for (int i = 0; i < col_num; i++){ // col_num used to be row_num
+        A[sourceNodes[i]][i] = 1.0; //is a source node
+        A[destinationNodes[i]][i] = -1.0; // is a destination node
+    }
     return A;
 }
 
-vector<vector<float>> deleteTHErow(const vector<int>& sourceNodes, const vector<vector<float>>& A) {
-    int length = sourceNodes.size();
+vector<vector<float>> deleteTHErow(const vector<int>& sourceNodes, const vector<vector<float>> &A){
+    
+    //get dimensions
+    int row_num = A.size();
+    int col_num = A[0].size();
 
-    // Find the largest node value manually (no algorithm header)
-    int maxNode = sourceNodes[0];
-    for (int i = 1; i < length; i++) {
-        if (sourceNodes[i] > maxNode) {
-            maxNode = sourceNodes[i];
-        }
-    }
+    //create Aa (should have one less row that A)
+    vector<vector<float>> Aa((row_num - 1), vector<float>((col_num), 0));
 
-    int row_num = maxNode + 1;
-    int col_num = length;
-
-    // Identify the row to delete
-    int deleteRow = -1;
+    // find what row we need to get rid of (assume we only need to get rid of one row)
+    int deleteRow = -5;
     for (int i = 0; i < row_num; i++) {
         int count = 0;
         for (int j = 0; j < col_num; j++) {
-            if (A[i][j] == -1.0) count++;
-            if (count == 2) {
+            if (A[i][j] == -1.0){
+                count += 1;
+            }
+            if (count == 2){
                 deleteRow = i;
                 break;
             }
         }
-        if (deleteRow != -1) break;
     }
 
-    cout << "Row to delete: " << deleteRow << endl;
-
-    // Create new matrix Aa without the deleted row
-    vector<vector<float>> Aa(row_num - 1, vector<float>(col_num, 0.0));
-
-    int newRow = 0;
-    for (int i = 0; i < row_num; i++) {
-        if (i == deleteRow) continue;
-        Aa[newRow++] = A[i];  // Copy rows except the deleted one
+    //check if there are no rows to get rid of
+    if (deleteRow == -5) {
+        return A;
     }
 
+    //delete the row by adding into new matrix
+    int newrow = 0;
+    for(int row = 0; row < row_num; row++){
+        if(row == deleteRow) continue;
+        for(int col = 0; col < col_num; col++){
+            if(row != deleteRow){
+                Aa[newrow][col] = A[row][col];
+            }
+        }
+        newrow++;
+    }
     return Aa;
 }
 
