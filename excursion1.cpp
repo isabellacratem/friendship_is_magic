@@ -64,18 +64,33 @@ void resultsInTxt (const vector<float> &data){      //function to print results 
     file.close();
 }
 
-
   vector<vector<int>> createAmatrix(const vector<int>& sourceNodes, const vector<int>& destinationNodes){
     //find length of array
     int length = sourceNodes.size();
 
-    //find the largest Node value
-    int max;
-    for(int i = 0; i < length; i++){
-        if(sourceNodes[i + 1] > sourceNodes[sourceNodes[i]]){
-            max = sourceNodes[i];
+    //find the largest Node value between source AND destination
+    int max_source = sourceNodes[0];
+    for (int i = 1; i < sourceNodes.size(); i++) {
+        if (sourceNodes[i] > max_source) {
+            max_source = sourceNodes[i];
         }
     }
+
+    int max_destination = destinationNodes[0];
+    for (int i = 1; i < destinationNodes.size(); i++) {
+        if (destinationNodes[i] > max_source) {
+            max_source = destinationNodes[i];
+        }
+    }
+   //Determine if the max is in the source or destination nodes
+    int max;
+        if (max_source > max_destination) {
+             max = max_source;
+        } 
+        else {
+            max = max_destination;
+        }
+
     //create dimensions for matrix A
     int row_num = max + 1;
     int col_num = length;
@@ -83,7 +98,6 @@ void resultsInTxt (const vector<float> &data){      //function to print results 
     //create matrix A
     vector<vector<int>> A(row_num, vector<int>(col_num, 0));
 
-    //create matrix A
     for (int i = 0; i < col_num; i++){ // col_num used to be row_num
         A[sourceNodes[i]][i] = 1; //is a source node
         A[destinationNodes[i]][i] = -1; // is a destination node
@@ -93,50 +107,47 @@ void resultsInTxt (const vector<float> &data){      //function to print results 
 
 vector<vector<int>> deleteTHErow(const vector<int>& sourceNodes, const vector<vector<int>> &A){
     
-    //similar to the last function
-    int count = 0;
-    int length = sourceNodes.size();
+    //get dimensions
+    int row_num = A.size();
+    int col_num = A[0].size();
 
-    int max;
-    for(int i = 0; i < length; i++){
-        if(sourceNodes[i + 1] > sourceNodes[sourceNodes[i]]){
-            max = sourceNodes[i];
-        }
-    }
-    int row_num = max + 1;
-    int col_num = length;
-
-    //create Aa
-    vector<vector<int>> Aa((row_num - 1), vector<int>((col_num - 1), 0));
+    //create Aa (should have one less row that A)
+    vector<vector<int>> Aa((row_num - 1), vector<int>((col_num), 0));
 
     // find what row we need to get rid of (assume we only need to get rid of one row)
-    int deleteRow;
+    int deleteRow = -5;
     for (int i = 0; i < row_num; i++) {
-        count = 0;
+        int count = 0;
         for (int j = 0; j < col_num; j++) {
             if (A[i][j] == -1){
                 count += 1;
             }
             if (count == 2){
                 deleteRow = i;
+                break;
             }
         }
     }
 
+    //check if there are no rows to get rid of
+    if (deleteRow == -5) {
+        return A;
+    }
+
     //delete the row by adding into new matrix
-    int index = 0;
+    int newrow = 0;
     for(int row = 0; row < row_num; row++){
+        if(row == deleteRow) continue;
         for(int col = 0; col < col_num; col++){
-            if(row == deleteRow){
-                index = 1;
-            }
-            else if(row != deleteRow){
-                Aa[row - index][col] = A[row][col];
+            if(row != deleteRow){
+                Aa[newrow][col] = A[row][col];
             }
         }
+        newrow++;
     }
     return Aa;
 }
+
 
 //zero matrix
 void zeroMatrix(vector<vector<float>>& mat, int rows, int cols) {
