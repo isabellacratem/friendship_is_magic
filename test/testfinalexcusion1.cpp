@@ -320,7 +320,7 @@ void resultsInTxt (const vector<float> &data){      //function to print results 
       file.close();
   }
   
-void checkValidity ( vector<float> &results, circuitData &circuit, vector<vector<float>> &A){
+void checkOpen ( vector<float> &results, circuitData &circuit, vector<vector<float>> &A){
     int numNodes=A.size();
     int numBranches=A[0].size();
     bool voltagesPresent=false;
@@ -366,7 +366,7 @@ void checkValidity ( vector<float> &results, circuitData &circuit, vector<vector
 }
 int main() {
     circuitData circuit;
-    readFile("netlist_unc.txt", circuit);
+    readFile("netlist.txt", circuit);
     processData(circuit);
     vector<vector<float>> u = {circuit.v}; // Convert to 2D vector
     vector<vector<float>> r_matrix = {circuit.r}; // Convert to 2D vector
@@ -421,7 +421,7 @@ int main() {
     back_substitute(bigMatrix, size, x);
 
     if(A.size()==Aa.size()){
-        checkValidity(x,circuit,A);
+        checkOpen(x,circuit,A);
     }
 
     for (int i = 0; i < size; i++) {
