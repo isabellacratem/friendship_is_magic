@@ -161,7 +161,18 @@ vector<vector<float>> deleteTHErow(const vector<int>& sourceNodes, const vector<
 
     //check if there are no rows to get rid of
     if (deleteRow == -5) {
-        return A;
+        for (int i = 0; i < row_num; i++) {
+            int count = 0;
+            for (int j = 0; j < col_num; j++) {
+                if (A[i][j] == -1.0){
+                    count += 1;
+                }
+                if (count == 1){
+                    deleteRow = i;
+                    break;
+                }
+            }
+        }
     }
 
     //delete the row by adding into new matrix
