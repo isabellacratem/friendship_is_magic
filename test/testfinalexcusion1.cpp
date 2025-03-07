@@ -310,8 +310,9 @@ void back_substitute(const vector<vector<float>>& mat, int N, vector<float>& x) 
 
 void resultsInTxt (const vector<float> &data){      //function to print results in a text file
     ofstream file("output.txt");
+   // file << fixed << setprecision(3);
     for ( size_t i = 0; i < data.size(); i++) {
-        file << setprecision(3) << data[i];
+        file <<setprecision(3)<< data[i];
         if (i != data.size() - 1) {
           file << " ";  // Add space between numbers
         }
