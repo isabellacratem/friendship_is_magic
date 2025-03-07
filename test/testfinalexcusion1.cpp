@@ -160,8 +160,13 @@ vector<vector<float>> deleteTHErow(const vector<int>& sourceNodes, const vector<
     }
 
     //check if there are no rows to get rid of
-    if (deleteRow == -5) {
-        return A;
+    if (deleteRow == -5) {                          //this means open circuit- if only one branch, remove the ground node
+        //return A;
+        for (int i = 0; i < row_num; i++) {
+            if (A[i][0] == -1.0){
+            deleteRow = i;
+            }   
+        }
     }
 
     //delete the row by adding into new matrix
@@ -320,51 +325,7 @@ void resultsInTxt (const vector<float> &data){      //function to print results 
       file << endl;
       file.close();
   }
-  
-void checkOpen ( vector<float> &results, circuitData &circuit, vector<vector<float>> &A){
-    int numNodes=A.size();
-    int numBranches=A[0].size();
-    bool voltagesPresent=false;
-    vector<float> voltages;
-    int numVoltages=0;
-    for(int i=0; i<circuit.v.size();i++){
-        if(circuit.v[i][0]!= 0.0f){
-            voltagesPresent=true;
-            numVoltages++; 
-            voltages.push_back(circuit.v[i][0]) ; 
-        }
-    }
-    if(!voltagesPresent) {                       //if no voltage sources, assign all values to 0
-        for(int i=0; i<results.size();i++)
-        results[i]=0;
-        return;
-    }
-    results[0]=0;                      //ground node=0
-    if(numVoltages==1){
-        for(int i=1; i<numNodes+numBranches; i++){                      
-            results[i]=voltages[0];
-            }
-    } else{
-        int j=0;
-        for(int i=0;i<numNodes-1;i++){
-            if(circuit.v[i][0]==0 ||circuit.v[i][0]==voltages[j]){
-                results[i+1]=voltages[j];
-            }
-            j++;                                                      //if neither is true, then the next voltage source
-            results[i+1]=voltages[j-1]+voltages[j];                   //add the voltage sources                        
-        }
-        j=0;
-        for(int i=numNodes-1;i<numBranches+numNodes-1;i++){               //use node voltages to calc branch voltages
-            results[i]=results[j+1]-results[j];
-            j++;
-        }
-    }
-    for(int i=0; i<results.size();i++){
-        if(isnan(results[i])){
-            results[i]=0;                          //fill in remaining current values w 0
-        }
-    }    
-}
+
 int main() {
     circuitData circuit;
     readFile("netlist.txt", circuit);
@@ -420,10 +381,6 @@ int main() {
     // Back substitution to get the solution
     vector<float> x(size);
     back_substitute(bigMatrix, size, x);
-
-    if(A.size()==Aa.size()){
-        checkOpen(x,circuit,A);
-    }
 
     for (int i = 0; i < size; i++) {
         cout << x[i] << " ";
