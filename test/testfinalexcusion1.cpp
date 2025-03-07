@@ -2,6 +2,7 @@
 #include <fstream>
 #include <vector>
 #include <iomanip>
+#include<cmath>
 using namespace std;
 
 /*Input: a file named textlist.txt w the format
@@ -319,10 +320,53 @@ void resultsInTxt (const vector<float> &data){      //function to print results 
       file.close();
   }
   
-
+void checkValidity ( vector<float> &results, circuitData &circuit, vector<vector<float>> &A){
+    int numNodes=A.size();
+    int numBranches=A[0].size();
+    bool voltagesPresent=false;
+    vector<float> voltages;
+    int numVoltages=0;
+    for(int i=0; i<circuit.v.size();i++){
+        if(circuit.v[i][0]!= 0.0f){
+            voltagesPresent=true;
+            numVoltages++; 
+            voltages.push_back(circuit.v[i][0]) ; 
+        }
+    }
+    if(!voltagesPresent) {                       //if no voltage sources, assign all values to 0
+        for(int i=0; i<results.size();i++)
+        results[i]=0;
+        return;
+    }
+    results[0]=0;                      //ground node=0
+    if(numVoltages==1){
+        for(int i=1; i<numNodes+numBranches; i++){                      
+            results[i]=voltages[0];
+            }
+    } else{
+        int j=0;
+        for(int i=0;i<numNodes-1;i++){
+            if(circuit.v[i][0]==0 ||circuit.v[i][0]==voltages[j]){
+                results[i+1]=voltages[j];
+            }
+            j++;                                                      //if neither is true, then the next voltage source
+            results[i+1]=voltages[j-1]+voltages[j];                   //add the voltage sources                        
+        }
+        j=0;
+        for(int i=numNodes-1;i<numBranches+numNodes-1;i++){               //use node voltages to calc branch voltages
+            results[i]=results[j+1]-results[j];
+            j++;
+        }
+    }
+    for(int i=0; i<results.size();i++){
+        if(isnan(results[i])){
+            results[i]=0;                          //fill in remaining current values w 0
+        }
+    }    
+}
 int main() {
     circuitData circuit;
-    readFile("netlist_3.txt", circuit);
+    readFile("netlist_unc.txt", circuit);
     processData(circuit);
     vector<vector<float>> u = {circuit.v}; // Convert to 2D vector
     vector<vector<float>> r_matrix = {circuit.r}; // Convert to 2D vector
@@ -375,6 +419,10 @@ int main() {
     // Back substitution to get the solution
     vector<float> x(size);
     back_substitute(bigMatrix, size, x);
+
+    if(A.size()==Aa.size()){
+        checkValidity(x,circuit,A);
+    }
 
     for (int i = 0; i < size; i++) {
         cout << x[i] << " ";
