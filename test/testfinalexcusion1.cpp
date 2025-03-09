@@ -119,6 +119,7 @@ vector<vector<float>> createAmatrix(const vector<int>& sourceNodes, const vector
         else {
             max = max_destination;
         }
+ 
     //create dimensions for matrix A
     int row_num = max + 1;
     int col_num = length;
@@ -127,7 +128,7 @@ vector<vector<float>> createAmatrix(const vector<int>& sourceNodes, const vector
     vector<vector<float>> A(row_num, vector<float>(col_num, 0.0));
 
     //create matrix A
-    for (int i = 0; i < col_num; i++){ // col_num used to be row_num
+    for (int i = 0; i < col_num; i++){
         A[sourceNodes[i]][i] = 1.0; //is a source node
         A[destinationNodes[i]][i] = -1.0; // is a destination node
     }
@@ -143,7 +144,7 @@ vector<vector<float>> deleteTHErow(const vector<int>& sourceNodes, const vector<
     //create Aa (should have one less row that A)
     vector<vector<float>> Aa((row_num - 1), vector<float>((col_num), 0));
 
-    // find what row we need to get rid of (assume we only need to get rid of one row)
+    //find what row we need to get rid of
     int deleteRow = -5;
     for (int i = 0; i < row_num; i++) {
         int count = 0;
