@@ -54,7 +54,6 @@ circuitData processData(circuitData &circuit) {
             circuit.r[i] = circuit.data[i][2];
         }
     }
-
     return circuit;
 }
 
@@ -272,7 +271,6 @@ vector<vector<float>> constructBigMatrix(
     for (int i = 0; i < uRows; i++) {
         bigMatrix[i + aRows + aCols][totalCols - 1] = u[i][0]; // u goes in the last column, shifting
     }
-
     return bigMatrix;
 }
 
@@ -282,7 +280,7 @@ void swap_rows(vector<float>& row1, vector<float>& row2) {
     row1 = row2;
     row2 = temp;
 }
-//row echelon matrix
+//row echelon matrix https://overbye.engr.tamu.edu/wp-content/uploads/sites/146/2018/09/ECE615Fall2018_Lect10.pdf
 void echelon_matrix(vector<vector<float>>& A, int n) {
     for (int i = 0; i < n; i++) {
         int pivot_row = i;
@@ -326,6 +324,38 @@ void resultsInTxt (const vector<float> &data){      //function to print results 
       file.close();
   }
 
+vector<vector<float>> sparseFormat(vector<vector<float>>& matrix)
+{
+    int size = 0;
+    for (int i = 0; i < matrix.size(); i++)
+        for (int j = 0; j < matrix[0].size(); j++)
+            if (matrix[i][j] != 0)
+                size++;
+
+    vector<vector<float>> compactMatrix(3, vector<float>(size)); //depands on number of non-zero values
+
+    int k = 0;
+    for (int i = 0; i < matrix.size(); i++)  // row 
+        for (int j = 0; j < matrix[0].size(); j++) // col
+            if (matrix[i][j] != 0) //omly take non zero
+            {
+                compactMatrix[0][k] = i;       // Row index
+                compactMatrix[1][k] = j;       // Column index
+                compactMatrix[2][k] = matrix[i][j]; // Value
+                k++;
+            }
+
+     cout << "Sparse Matrix (Row Col Value) " << endl;
+    for (int i = 0; i < 3; i++)
+    {
+        for (int j = 0; j < size; j++)
+            cout << " " << compactMatrix[i][j];
+
+        cout << "\n";
+    }
+    return compactMatrix;
+}
+
 int main() {
     circuitData circuit;
     readFile("netlist.txt", circuit);
@@ -334,12 +364,10 @@ int main() {
     vector<vector<float>> r_matrix = {circuit.r}; // Convert to 2D vector
     cout <<"\nsource node array: ";            
     for (int j: circuit.s){
-      cout<< j <<" ";
-    }
+      cout<< j <<" "; }
     cout <<"\ndestination node array: ";
     for (int j: circuit.d){
-      cout<< j <<" ";
-    }
+      cout<< j <<" "; }
 
     vector<vector<float>> N(circuit.r.size(), vector<float>(circuit.r.size(), 0.0f)); // Ensure proper size
     for (int i = 0; i < circuit.r.size(); i++) {
@@ -350,23 +378,21 @@ int main() {
     cout << "u:"<<endl;
     printMatrix(u);
 
-    vector<int> sourceNodesV = {circuit.s}; // Convert to 2D vector
-    vector<int> destinationNodesV = {circuit.d}; // Convert to 2D vector
+    vector<int> sourceNodesV = {circuit.s}; // Convert to vector
+    vector<int> destinationNodesV = {circuit.d}; // Convert to vector
 
     vector<vector<float>> A = createAmatrix(sourceNodesV, destinationNodesV);
 
     cout << "Matrix A:" << endl;
-    printMatrix(A); // This will work with the unchanged printMatrix function
+    printMatrix(A); 
 
     vector<vector<float>> Aa = deleteTHErow(sourceNodesV, A);
-
     cout << "Matrix Aa (after deleting row):" << endl;
-    printMatrix(Aa); // This will work with the unchanged printMatrix function
+    printMatrix(Aa);
 
     // Construct the big matrix
     vector<vector<float>> bigMatrix = constructBigMatrix(Aa, N, u);
-
-    // constructed matrix
+    vector<vector<float>> bigMatrix_2 = bigMatrix;
     cout << "Big Matrix:\n";
     printMatrix(bigMatrix);
     cout << "------------------------\n";
@@ -375,18 +401,21 @@ int main() {
     int size = bigMatrix.size();
     //partial pivoting and forward elimination
     echelon_matrix(bigMatrix, size);
-
     printMatrix(bigMatrix);
 
     // Back substitution to get the solution
     vector<float> x(size);
     back_substitute(bigMatrix, size, x);
-
+    cout <<"answer: " <<endl;
     for (int i = 0; i < size; i++) {
         cout << x[i] << " ";
     }
     cout << endl;    
-    resultsInTxt(x);
+    resultsInTxt(x);  //result to output file
+
+    //Extra credits
+    cout << "Extra credit output:" << endl;
+    sparseFormat(bigMatrix_2);
 
     return 0;
 }
