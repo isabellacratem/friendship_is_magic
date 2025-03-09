@@ -2,6 +2,7 @@
 #include <fstream>
 #include <vector>
 #include <iomanip>
+#include<cmath>
 using namespace std;
 
 /*Input: a file named textlist.txt w the format
@@ -159,8 +160,13 @@ vector<vector<float>> deleteTHErow(const vector<int>& sourceNodes, const vector<
     }
 
     //check if there are no rows to get rid of
-    if (deleteRow == -5) {
-        return A;
+    if (deleteRow == -5) {                          //this means open circuit- if only one branch, remove the ground node
+        //return A;
+        for (int i = 0; i < row_num; i++) {
+            if (A[i][0] == -1.0){
+            deleteRow = i;
+            }   
+        }
     }
 
     //delete the row by adding into new matrix
@@ -319,11 +325,10 @@ void resultsInTxt (const vector<float> &data){      //function to print results 
       file << endl;
       file.close();
   }
-  
 
 int main() {
     circuitData circuit;
-    readFile("netlist_6.txt", circuit);
+    readFile("netlist.txt", circuit);
     processData(circuit);
     vector<vector<float>> u = {circuit.v}; // Convert to 2D vector
     vector<vector<float>> r_matrix = {circuit.r}; // Convert to 2D vector
