@@ -208,7 +208,7 @@ vector<vector<float>> transposeMatrix(const vector<vector<float>>& mat) {
     }
     return transpose;
 }
-
+//construct big matrixm with row block 1: KVL, ROW BLACK 2: KCL, row block 3: Ohm's law
 vector<vector<float>> constructBigMatrix(
     const vector<vector<float>>& A, 
     const vector<vector<float>>& N, 
@@ -282,20 +282,23 @@ void swap_rows(vector<float>& row1, vector<float>& row2) {
     row2 = temp;
 }
 //row echelon matrix https://overbye.engr.tamu.edu/wp-content/uploads/sites/146/2018/09/ECE615Fall2018_Lect10.pdf
-void echelon_matrix(vector<vector<float>>& A, int n) {
-    for (int i = 0; i < n; i++) {
+void echelon_matrix(vector<vector<float>>& A, int n) { 
+    for (int i = 0; i < n; i++) { // iterate over each column
         int pivot_row = i;
+        // Find the row with the largest absolute value in column i (partial pivoting)
         for (int j = i + 1; j < n; j++) {
             if (abs(A[j][i]) > abs(A[pivot_row][i])) {
                 pivot_row = j;
             }
         }
         if (pivot_row != i) {
-            swap_rows(A[i], A[pivot_row]);
+            swap_rows(A[i], A[pivot_row]); // swap row
         }
+        // perform row elimination to make all elements below the pivot zero
         for (int j = i + 1; j < n; j++) {
-            float factor = A[j][i] / A[i][i];
-            for (int k = i; k <= n; k++) {
+            float factor = A[j][i] / A[i][i];  // factor to eliminate
+            // Subtract the factor times the pivot row from the current row
+            for (int k = i; k <= n; k++) { 
                 A[j][k] -= factor * A[i][k];
             }
         }
@@ -314,9 +317,9 @@ void back_substitute(const vector<vector<float>>& mat, int N, vector<float>& x) 
 
 void resultsInTxt (const vector<float> &data){      //function to print results in a text file
     ofstream file("output.txt");
-   // file << fixed << setprecision(3);
+   file << fixed << setprecision(3);
     for ( size_t i = 0; i < data.size(); i++) {
-        file <<setprecision(3)<< data[i];
+        file << data[i];
         if (i != data.size() - 1) {
           file << " ";  // Add space between numbers
         }
@@ -324,21 +327,22 @@ void resultsInTxt (const vector<float> &data){      //function to print results 
       file << endl;
       file.close();
   }
-
-vector<vector<float>> sparseFormat(vector<vector<float>>& matrix)
-{
+//extra credits
+// Function to print the sparse matrix in triplet form (row, column, value)
+// Sparse format function to convert matrix to sparse format
+vector<vector<float>> sparseFormat(vector<vector<float>>& matrix) {
     int size = 0;
     for (int i = 0; i < matrix.size(); i++)
-        for (int j = 0; j < matrix[0].size(); j++)
+        for (int j = 0; j < matrix[0].size() - 1; j++)  // Don't include the last column
             if (matrix[i][j] != 0)
                 size++;
 
-    vector<vector<float>> compactMatrix(3, vector<float>(size)); //depands on number of non-zero values
+    vector<vector<float>> compactMatrix(3, vector<float>(size)); // Dependent on number of non-zero values
 
     int k = 0;
-    for (int i = 0; i < matrix.size(); i++)  // row 
-        for (int j = 0; j < matrix[0].size(); j++) // col
-            if (matrix[i][j] != 0) //omly take non zero
+    for (int i = 0; i < matrix.size(); i++)  // Row 
+        for (int j = 0; j < matrix[0].size() - 1; j++) // Column, skipping the last column (b values)
+            if (matrix[i][j] != 0) // Only take non-zero
             {
                 compactMatrix[0][k] = i;       // Row index
                 compactMatrix[1][k] = j;       // Column index
@@ -346,9 +350,8 @@ vector<vector<float>> sparseFormat(vector<vector<float>>& matrix)
                 k++;
             }
 
-     cout << "Sparse Matrix (Row Col Value) " << endl;
-    for (int i = 0; i < 3; i++)
-    {
+    cout << "Sparse Matrix (Row Col Value) " << endl;
+    for (int i = 0; i < 3; i++) {
         for (int j = 0; j < size; j++)
             cout << " " << compactMatrix[i][j];
 
@@ -357,9 +360,85 @@ vector<vector<float>> sparseFormat(vector<vector<float>>& matrix)
     return compactMatrix;
 }
 
+// EXTRA CREDIT Sparse Gaussian Elimination
+void sparseGaussianElimination(vector<vector<float>>& sparse, int n) {
+    for (int k = 0; k < n; k++) {
+        // Find pivot element
+        float pivot = 0;
+        int pivotIndex = -1;
+
+        // Locate the pivot (diagonal element)
+        for (int i = 0; i < sparse[0].size(); ++i) {
+            if (sparse[0][i] == k && sparse[1][i] == k) {
+                pivot = sparse[2][i];
+                pivotIndex = i;
+                break;
+            }
+        }
+
+        if (pivot == 0) {
+            cout << "Matrix is singular" << endl;
+            return;
+        }
+
+        // Normalize pivot row
+        for (int i = 0; i < sparse[0].size(); ++i) {
+            if (sparse[0][i] == k) {
+                sparse[2][i] /= pivot;
+            }
+        }
+
+        // Eliminate entries below the pivot element
+        for (int i = 0; i < sparse[0].size(); ++i) {
+            if (sparse[0][i] > k && sparse[1][i] == k) {
+                float factor = sparse[2][i];
+                int row = sparse[0][i];
+
+                // Update matrix
+                for (int j = 0; j < sparse[0].size(); ++j) {
+                    if (sparse[0][j] == row && sparse[1][j] == sparse[1][i]) {
+                        sparse[2][j] -= factor * sparse[2][pivotIndex];
+                    }
+                }
+
+                // Modify the right-hand side (last column)
+                for (int j = 0; j < sparse[0].size(); ++j) {
+                    if (sparse[0][j] == row && sparse[1][j] == n) {
+                        sparse[2][j] -= factor * sparse[2][pivotIndex];
+                    }
+                }
+            }
+        }
+    }
+}
+
+// EXTRA CREDIT Sparse Back Substitution
+vector<float> sparseBackSubstitute(const vector<vector<float>>& sparse, int n) {
+    vector<float> x(n, 0);  // Solution vector initialized to zero
+
+    // Backward substitution
+    for (int i = n - 1; i >= 0; --i) {
+        float sum = 0;
+
+        // Loop through all non-zero elements in the current row
+        for (int j = 0; j < sparse[0].size(); ++j) {
+            if (sparse[0][j] == i) {
+                if (sparse[1][j] > i) {
+                    sum -= sparse[2][j] * x[sparse[1][j]];  // For entries in the row after diagonal
+                }
+                if (sparse[1][j] == i) {
+                    x[i] = (sparse[2][j] - sum) / sparse[2][j];  // Solve for diagonal element
+                    break;
+                }
+            }
+        }
+    }
+    return x;
+}
+
 int main() {
     circuitData circuit;
-    readFile("netlist.txt", circuit);
+    readFile("netlist_1.txt", circuit);
     processData(circuit);
     vector<vector<float>> u = {circuit.v}; // Convert to 2D vector
     vector<vector<float>> r_matrix = {circuit.r}; // Convert to 2D vector
@@ -416,7 +495,23 @@ int main() {
 
     //Extra credits
     cout << "Extra credit output:" << endl;
-    sparseFormat(bigMatrix_2);
+    int n = bigMatrix_2.size();
+
+    // Convert the matrix to sparse format
+    vector<vector<float>> sparseMatrix = sparseFormat(bigMatrix_2);
+
+    // Perform sparse Gaussian elimination
+    sparseGaussianElimination(sparseMatrix, n);
+
+    // Perform sparse back substitution to find the solution
+    vector<float> solution = sparseBackSubstitute(sparseMatrix, n);
+
+    // Output the solution
+    cout << "Solution: ";
+    for (const float& val : solution) {
+        cout << val << " ";
+    }
+    cout << endl;
 
     return 0;
 }
