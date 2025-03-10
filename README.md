@@ -4,7 +4,7 @@ what files need to be included...
 How to execute/run:
 expected outputs
 
-Bonus:
+Bonus: yes
 
 
 Steps/Functions in the Code
