@@ -19,7 +19,7 @@ struct circuitData {
     vector<string> labels;  // Array that stores the branch names (to know voltage vs resistance)
     vector<vector<float>> data;  // Stores all other info (source and destination node and numeric component value)
 };
-
+//read the text file and extract the data into 2 matrices
 circuitData readFile(string file, circuitData& circuit) {
     ifstream f(file); // Open the text file 
     string label;
@@ -33,7 +33,7 @@ circuitData readFile(string file, circuitData& circuit) {
     f.close();
     return circuit;
 }
-
+//separate the data into 3 source, destination, and value matrices.
 circuitData processData(circuitData &circuit) {
     int numBranches = circuit.labels.size();
     circuit.s.resize(numBranches);
@@ -57,33 +57,6 @@ circuitData processData(circuitData &circuit) {
     return circuit;
 }
 
-void resultsInTxt(vector<int> data) {
-    ofstream file("output.txt");
-    for (size_t i = 0; i < data.size(); i++) {
-        file << data[i];
-        if (i != data.size() - 1) {
-            file << " ";
-        }
-    }
-    file << endl;
-    file.close();
-}
-
-// Modify to return vector<vector<float>> instead of vector<vector<int>>
-vector<vector<float>> transposeMatrix(vector<vector<float>>& matrix) {
-    int rows = matrix.size();
-    int col = matrix[0].size();
-    vector<vector<float>> matrixT(col, vector<float>(rows));
-    for (int i = 0; i < rows; i++) {
-        for (int j = 0; j < col; j++) {
-            matrixT[j][i] = matrix[i][j];
-        }
-    }
-    return matrixT;
-}
-
-
-// Keep printMatrix unchanged
 void printMatrix(vector<vector<float>>& matrix) {
     for (const auto& row : matrix) {
         for (int val : row) {
@@ -160,7 +133,7 @@ vector<vector<float>> deleteTHErow(const vector<int>& sourceNodes, const vector<
     }
 
     //check if there are no rows to get rid of
-    if (deleteRow == -5) {                          //this means open circuit- if only one branch, remove the ground node
+    if (deleteRow == -5) {                          //this means open circuit- if only one branch, remove the destination node
         //return A;
         for (int i = 0; i < row_num; i++) {
             if (A[i][0] == -1.0){
@@ -208,7 +181,7 @@ vector<vector<float>> transposeMatrix(const vector<vector<float>>& mat) {
     }
     return transpose;
 }
-//construct big matrixm with row block 1: KVL, ROW BLACK 2: KCL, row block 3: Ohm's law
+//construct big matrix with row block 1: KVL, ROW BLOCK 2: KCL, row block 3: Ohm's law
 vector<vector<float>> constructBigMatrix(
     const vector<vector<float>>& A, 
     const vector<vector<float>>& N, 
@@ -438,7 +411,7 @@ vector<float> sparseBackSubstitute(const vector<vector<float>>& sparse, int n) {
 
 int main() {
     circuitData circuit;
-    readFile("netlist_1.txt", circuit);
+    readFile("netlist.txt", circuit);
     processData(circuit);
     vector<vector<float>> u = {circuit.v}; // Convert to 2D vector
     vector<vector<float>> r_matrix = {circuit.r}; // Convert to 2D vector

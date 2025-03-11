@@ -1,14 +1,16 @@
 How to compile:
-what files need to be included...
+This code will compile with the g++ command. The only file that needs to be included in the working directory with the file is a text file named 
+"netlist.txt". If there are any errors running the code, double check that the file name matches what is being called in main.
 
 How to execute/run:
-expected outputs
+After compiling the code, the program should run in its entirety when called. The results of the program (voltages, potentials, and currents) will be found in a text file named "output.txt" which will be created in the same directory. We have included print statements throughout the code as well to showcase some of the inner workings of the algorithm as it is run. However, these can easily be commented out if desired.
 
-Bonus: Yes, our group have attempted the bonus points. Our big matrix is a sparse matrix with full combination of each small matrix, with 0 matrix included. We performed Gaussian Elimation and back substitution to achieve the final answer as mentioned by the TA. We also generate the big matrix to the sparse (row, col, value) for mat, saving memory, we also performed Gaussian Elimation and back substitution with the sparse triplets matrix.
+
+Bonus: Yes, our group have attempted the bonus points. Our big matrix is a sparse matrix with full combination of each small matrix, with the 0 matrix included. We performed Gaussian Elimation and back substitution to achieve the final answer as mentioned by the TA. We also generated the big matrix to the sparse (row, col, value) for mat, saving memory, we also performed Gaussian Elimation and back substitution with the sparse triplets matrix.
 
 
 Steps/Functions in the Code
-- readFile will take in the provided text file and the circuitData struct. It will return circuitData with the nessesary data extracted from the text file.
+- readFile will take in the provided text file and the circuitData struct. It will return circuitData with the nessesary data extracted from a text file in the same directory.
 
 - processData will take in the circuitData struct containing information from the text file and sort it to be used within the system. It will return circuitData.
 
@@ -24,4 +26,4 @@ Steps/Functions in the Code
 
 - sparseFormat: function converts a given dense matrix into a sparse matrix representation using the three-column format: row index, column index, and nonzero value. It first counts the number of nonzero elements in the input matrix to determine the required storage size. Then, it iterates through the matrix, storing the position and value of each nonzero element in a compact format. The function also prints the resulting sparse matrix for verification. This approach efficiently reduces memory usage for matrices with many zero entries.
 
-- resultsInTxt will print the final results to a text file.
+- resultsInTxt will print the final results to a text file named output.txt.
