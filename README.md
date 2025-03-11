@@ -27,3 +27,7 @@ Steps/Functions in the Code
 - sparseFormat: function converts a given dense matrix into a sparse matrix representation using the three-column format: row index, column index, and nonzero value. It first counts the number of nonzero elements in the input matrix to determine the required storage size. Then, it iterates through the matrix, storing the position and value of each nonzero element in a compact format. The function also prints the resulting sparse matrix for verification. This approach efficiently reduces memory usage for matrices with many zero entries.
 
 - resultsInTxt will print the final results to a text file named output.txt.
+
+
+
+--Emily Wang, Allison Freeman, Isabella Cratem
